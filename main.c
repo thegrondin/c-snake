@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <conio.h>
 
-#define BOARD_SIZE_X 25
-#define BOARD_SIZE_Y 16
+#define BOARD_SIZE_X 15
+#define BOARD_SIZE_Y 10
 
 typedef struct {
 	int x;
@@ -138,10 +138,41 @@ void write_food_pos(char board[BOARD_SIZE_Y][BOARD_SIZE_X], food_position food) 
 	board[food.y][food.x] = '#';
 }
 
-void update_food_position(food_position * food)
+void update_food_position(food_position * food, snake_position snake[], int snake_size)
 {
-	food->x = rand() % (BOARD_SIZE_X - 1);
-	food->y = rand() % (BOARD_SIZE_Y - 1);
+	int can_be_there = 1;
+
+	int x;
+	int y;
+
+	do
+	{
+		can_be_there = 1;
+		
+		x = rand() % (BOARD_SIZE_X - 1);
+		y = rand() % (BOARD_SIZE_Y - 1);
+
+		for (int i = 0; i < snake_size; i++)
+		{
+			if (snake[i].x == x && snake[i].y == y)
+			{
+				can_be_there = 0;
+			}
+		}
+		
+	} while (!can_be_there);
+
+	food->x = x;
+	food->y = y;
+	
+	/*while(!can_be_there)
+	{
+	
+		//food->x = rand() % (BOARD_SIZE_X - 1);
+		//food->y = rand() % (BOARD_SIZE_Y - 1);
+	}*/
+	
+	
 }
 
 int out_of_bound(snake_position head, snake_position next_pos)
@@ -176,8 +207,8 @@ int game ()
 
 	snake_position* snake = malloc(1 * sizeof(snake_position));
 
-	snake[0].x = 10;
-	snake[0].y = 5;
+	snake[0].x = 2;
+	snake[0].y = 2;
 
 	snake_position snake_movement = { 0,0 };
 	food_position food_item = { 5, 5 };
@@ -218,7 +249,7 @@ int game ()
 
 		if (snake[0].x == food_item.x && snake[0].y == food_item.y) {
 			snake = grow_snake(snake, size);
-			update_food_position(&food_item);
+			update_food_position(&food_item, snake, size);
 			size++;
 		}
 
@@ -250,7 +281,7 @@ int game ()
 
 		print_board(board);
 
-		Sleep(70);
+		Sleep(200);
 
 	}
 
